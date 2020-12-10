@@ -729,6 +729,128 @@
 #endif // end of CPU_MAP_AZTEEG_X5
 
 
+#ifdef CPU_MAP_BTT_SKR_v1.3 // (BTT SKR v1.3 Boards)
+
+  // Define serial port pins and interrupt vectors.
+  #define SERIAL_RX     USART_RX_vect
+  #define SERIAL_UDRE   USART_UDRE_vect
+
+  // Define step pulse output pins. NOTE: All step bit pins must be on the same port.
+  #define STEP_DDR        LPC_GPIO2->FIODIR
+  #define STEP_PORT       LPC_GPIO2->FIOPIN
+  #define X_STEP_BIT      0 // p2.2
+  #define Y_STEP_BIT      1 // p0.19
+  #define Z_STEP_BIT      2 // p0.22
+  #define A_STEP_BIT      3 // p2.13
+  #define STEP_MASK       ((1<<X_STEP_BIT)|(1<<Y_STEP_BIT)|(1<<Z_STEP_BIT)|(1<<A_STEP_BIT)) // All step bits
+
+  // Define step direction output pins. NOTE: All direction pins must be on the same port.
+  #define DIRECTION_DDR     LPC_GPIO0->FIODIR
+  #define DIRECTION_PORT    LPC_GPIO0->FIOPIN
+  #define X_DIRECTION_BIT   5  // p2.6
+  #define Y_DIRECTION_BIT   11 // p0.20
+  #define Z_DIRECTION_BIT   20 // p2.11
+  #define A_DIRECTION_BIT   22 // p0.11
+  #define DIRECTION_MASK    ((1<<X_DIRECTION_BIT)|(1<<Y_DIRECTION_BIT)|(1<<Z_DIRECTION_BIT)|(1<<A_DIRECTION_BIT)) // All direction bits
+
+  // Define stepper driver enable/disable output pin.
+  #define STEPPERS_DISABLE_DDR    LPC_GPIO0->FIODIR
+  #define STEPPERS_DISABLE_PORT   LPC_GPIO0->FIOPIN
+  #define X_DISABLE_BIT           4  // p2.1
+  #define Y_DISABLE_BIT           10 // p2.8
+  #define Z_DISABLE_BIT           19 // p0.21
+  #define A_DISABLE_BIT           21 // p2.12
+  #define STEPPERS_DISABLE_MASK   ((1<<X_DISABLE_BIT)|(1<<Y_DISABLE_BIT)|(1<<Z_DISABLE_BIT)|(1<<A_DISABLE_BIT))
+
+  // Define homing/hard limit switch input pins and limit interrupt vectors.
+  // NOTE: All limit bit pins must be on the same port, but not on a port with other input pins (CONTROL).
+  #define LIMIT_DDR         LPC_GPIO1->FIODIR
+  #define LIMIT_PIN         LPC_GPIO1->FIOPIN
+  #define LIMIT_PORT        LPC_GPIO1->FIOPIN
+  #define X_LIMIT_BIT       29  // X-MIN=1.29, X-MAX=1.28
+  #define Y_LIMIT_BIT       27  // Y-MIN=1.27, Y-MAX=1.26
+  #define Z_LIMIT_BIT       25  // Z-MIN=1.25, Z-MAX=1.24
+  #define A_LIMIT_BIT       29  // reuse p1.29
+  #define LIMIT_MASK       ((1<<X_LIMIT_BIT)|(1<<Y_LIMIT_BIT)|(1<<Z_LIMIT_BIT)|(1<<A_LIMIT_BIT)) // All limit bits
+
+  // Define spindle enable and spindle direction output pins.
+  #define SPINDLE_ENABLE_DDR        LPC_GPIO1->FIODIR
+  #define SPINDLE_ENABLE_PORT       LPC_GPIO1->FIOPIN
+  #define SPINDLE_ENABLE_BIT        30  // P1.30
+  #define SPINDLE_DIRECTION_DDR     LPC_GPIO1->FIODIR
+  #define SPINDLE_DIRECTION_PORT    LPC_GPIO1->FIOPIN
+  #define SPINDLE_DIRECTION_BIT     31  // P1.31
+
+  // Define flood and mist coolant enable output pins.
+  #define COOLANT_FLOOD_DDR   LPC_GPIO2->FIODIR
+  #define COOLANT_FLOOD_PORT  LPC_GPIO2->FIOPIN
+  #define COOLANT_FLOOD_BIT   6  // MOSFET 2.6
+  #define COOLANT_MIST_DDR    LPC_GPIO2->FIODIR
+  #define COOLANT_MIST_PORT   LPC_GPIO2->FIOPIN
+  #define COOLANT_MIST_BIT    7  // MOSFET 2.7
+  #define ENABLE_M7           // enables COOLANT MIST
+
+  // Define user-control controls (cycle start, reset, feed hold) input pins.
+  // NOTE: All CONTROLs pins must be on the same port and not on a port with other input pins (limits).
+  #define CONTROL_DDR       LPC_GPIO1->FIODIR
+  #define CONTROL_PIN       LPC_GPIO1->FIOPIN
+  #define CONTROL_PORT      LPC_GPIO1->FIOPIN
+  #define CONTROL_RESET_BIT         NotUsed  // Not needed as there is a special RESET pin on the Smoothiebaord
+  #define CONTROL_FEED_HOLD_BIT     22  // P1.22
+  #define CONTROL_CYCLE_START_BIT   23  // P1.23
+  #define CONTROL_SAFETY_DOOR_BIT   22  // P1.22 NOTE: Safety door is shared with feed hold. Enabled by config define.
+  #define CONTROL_INT       PCIE1  // Pin change interrupt enable pin
+  #define CONTROL_INT_vect  PCINT1_vect
+  #define CONTROL_PCMSK     NotUsed // Pin change interrupt register
+  #define CONTROL_MASK      ((1<<CONTROL_RESET_BIT)|(1<<CONTROL_FEED_HOLD_BIT)|(1<<CONTROL_CYCLE_START_BIT)|(1<<CONTROL_SAFETY_DOOR_BIT))
+  #define CONTROL_INVERT_MASK   CONTROL_MASK // May be re-defined to only invert certain control pins.
+
+  // Define probe switch input pin.
+  #define PROBE_DDR       LPC_GPIO1->FIODIR
+  #define PROBE_PIN       LPC_GPIO1->FIOPIN
+  #define PROBE_PORT      LPC_GPIO1->FIOPIN
+  #define PROBE_BIT       27  // reuse P1.27 from Y-MAX
+  #define PROBE_MASK      (1<<PROBE_BIT)
+
+  // The LPC17xx has 6 PWM channels. Each channel has 2 pins. It can drive both pins simultaneously to the same value.
+  //
+  // PWM Channel      PWM1_CH1  PWM1_CH2  PWM1_CH3  PWM1_CH4  PWM1_CH5  PWM1_CH6
+  // Primary pin      P1.18     P1.20     P1.21     P1.23     P1.24     P1.26
+  // Secondary pin    P2.0      P2.1      P2.2      P2.3      P2.4      P2.5
+  #define SPINDLE_PWM_CHANNEL           PWM1_CH6    // BED MOSFET (P2.5)
+  #define SPINDLE_PWM_USE_PRIMARY_PIN   false
+  #define SPINDLE_PWM_USE_SECONDARY_PIN true
+  #ifdef SPINDLE_PWM_PIN_1_23
+    #define SPINDLE_PWM_CHANNEL           PWM1_CH4    // MOSFET3 (P1.23)
+    #define SPINDLE_PWM_USE_PRIMARY_PIN   true
+    #define SPINDLE_PWM_USE_SECONDARY_PIN false
+  #endif
+  #ifdef SPINDLE_PWM_PIN_2_4
+    #define SPINDLE_PWM_CHANNEL           PWM1_CH5    // MOSFET3 (P1.23)
+    #define SPINDLE_PWM_USE_PRIMARY_PIN   false
+    #define SPINDLE_PWM_USE_SECONDARY_PIN true
+  #endif
+
+  // Stepper current control
+  #define CURRENT_I2C Driver_I2C1       // I2C driver for current control. Comment out to disable (for C3d boards!)
+  #define CURRENT_MCP44XX_ADDR 0b0101100  // Address of MCP44XX
+  #define CURRENT_WIPERS {0, 1, 6, 7};    // Wiper registers (X, Y, Z, A)
+  #define CURRENT_FACTOR 113.33           // Convert amps to digipot value
+
+  // Variable spindle configuration below. Do not change unless you know what you are doing.
+  // NOTE: Only used when variable spindle is enabled.
+  #define SPINDLE_PWM_MAX_VALUE     255 // Don't change. 328p fast PWM mode fixes top value as 255.
+  #ifndef SPINDLE_PWM_MIN_VALUE
+    #define SPINDLE_PWM_MIN_VALUE   1   // Must be greater than zero.
+  #endif
+  //#define SPINDLE_PWM_OFF_VALUE     0 // Defined in config.h
+  #define SPINDLE_PWM_RANGE         (SPINDLE_PWM_MAX_VALUE-SPINDLE_PWM_MIN_VALUE)
+  #define SPINDLE_TCCRA_REGISTER    TCCR2A
+  #define SPINDLE_TCCRB_REGISTER    TCCR2B
+  #define SPINDLE_OCR_REGISTER      OCR2A
+  #define SPINDLE_COMB_BIT          COM2A1
+#endif // end of CPU_MAP_BTT_SKR_v1.3
+
 /*
 #ifdef CPU_MAP_CUSTOM_PROC
   // For a custom pin map or different processor, copy and edit one of the available cpu

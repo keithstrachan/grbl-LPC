@@ -32,11 +32,14 @@
 
 
 // Define board type for pin map and default settings.
-#define CPU_MAP_SMOOTHIEBOARD   // Smoothieboard (NXP LPC1769 MCU)
+#define CPU_MAP_ATMEGA328P        // Arduino Uno
+//#define CPU_MAP_SMOOTHIEBOARD   // Smoothieboard (NXP LPC1769 MCU)
 //#define CPU_MAP_C3D_REMIX       // Cohesion3D Remix (NXP LPC1769 MCU)
 //#define CPU_MAP_C3D_MINI        // Cohesion3D Mini (NXP LPC1769 MCU)
 //#define CPU_MAP_MKS_SBASE       // MKS SBASE Board (NXP LPC1768 MCU)
 //#define CPU_MAP_AZTEEG_X5       // Azteeg X5 Board (NXP LPC1769 MCU)
+#define CPU_MAP_BTT_SKR_v1.3      // BTT SKR v1.3 Board (NXP LPC1768 MCU)
+
 
 // Force other Spindle PWM Pin (default is P2.5)
 //#define SPINDLE_PWM_PIN_1_23
